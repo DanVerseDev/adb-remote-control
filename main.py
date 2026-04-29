@@ -25,8 +25,8 @@ class RemoteApp(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("Android TV Remote")
-        self.geometry("360x700")
-        self.minsize(300, 500)
+        self.geometry("250x600")
+        self.minsize(250, 600)
 
         self.connected_ip = None
 
@@ -56,16 +56,17 @@ class RemoteApp(ctk.CTk):
         
         self.build_remote()
         self.bind_keys()
-        self.center_window()
+        self.after(0, self.center_window)
 
     def center_window(self):
-        self.update_idletasks()
-        w = self.winfo_width()
-        h = self.winfo_height()
+        w = 360
+        h = 600
+
         ws = self.winfo_screenwidth()
         hs = self.winfo_screenheight()
+        offset_y = 40
         x = (ws // 2) - (w // 2)
-        y = (hs // 2) - (h // 2)
+        y = (hs // 2) - (h // 2) - offset_y
         self.geometry(f"{w}x{h}+{x}+{y}")
 
     # ---------- UI ----------
@@ -100,8 +101,9 @@ class RemoteApp(ctk.CTk):
         for i in range(3):
             vol.grid_columnconfigure(i, weight=1)
 
-        self.btn(vol, "Vol+", "KEYCODE_VOLUME_UP", 0, 0)
-        self.btn(vol, "Vol-", "KEYCODE_VOLUME_DOWN", 0, 1)
+
+        self.btn(vol, "Vol-", "KEYCODE_VOLUME_DOWN", 0, 0)
+        self.btn(vol, "Vol+", "KEYCODE_VOLUME_UP", 0, 1)
         self.btn(vol, "Mute", "KEYCODE_VOLUME_MUTE", 0, 2)
 
         self.power_btn = ctk.CTkButton(self.container, text="Power", fg_color="red",
@@ -115,7 +117,7 @@ class RemoteApp(ctk.CTk):
         b = ctk.CTkButton(
             parent,
             text=text,
-            height=60,
+            height=60,  # más consistente
             corner_radius=12,
             command=lambda k=key: self.send_key(k)
         )
