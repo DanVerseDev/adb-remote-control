@@ -115,7 +115,7 @@ class RemoteApp(ctk.CTk):
         b = ctk.CTkButton(
             parent,
             text=text,
-            height=60,  # más consistente
+            height=60,
             corner_radius=12,
             command=lambda k=key: self.send_key(k)
         )
