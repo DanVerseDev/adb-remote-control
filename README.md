@@ -26,6 +26,13 @@ Works on desktop and mobile (Pydroid3).
 - Python 3.x
 - ADB installed and accessible in PATH
 
+## ⚡ Quick Start
+
+```bash
+pip install customtkinter
+python main.py
+```
+
 ### Python dependencies
 
 ```bash
