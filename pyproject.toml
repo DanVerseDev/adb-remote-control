@@ -1,5 +1,5 @@
 [project]
-name = "adb-tv-remote"
+name = "adb-remote-control"
 version = "0.1.0"
 description = "Minimal Android TV remote over ADB (WiFi), works on PC and Pydroid"
 authors = [{name = "DanVerse"}]
