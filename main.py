@@ -3,7 +3,7 @@ import threading
 import sys
 import logging
 import customtkinter as ctk
-import tkinter as tk # For entering GUI mode on Pydroid3
+import tkinter as tk # For Pydroid3
 
 ADB_PATH = "adb"
 LOG_FILE = "remote.log"
@@ -115,7 +115,7 @@ class RemoteApp(ctk.CTk):
         b = ctk.CTkButton(
             parent,
             text=text,
-            height=60,
+            height=60,  # más consistente
             corner_radius=12,
             command=lambda k=key: self.send_key(k)
         )
@@ -243,7 +243,10 @@ class RemoteApp(ctk.CTk):
         self.bind("<Escape>", lambda e: self.send_key("KEYCODE_HOME"))
 
 
-if __name__ == "__main__":
+def main():
     logging.info("Starting app")
     app = RemoteApp()
     app.mainloop()
+
+if __name__ == "__main__":
+    main()
