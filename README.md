@@ -56,9 +56,23 @@ python main.py
 
 ### Pydroid3 (Android)
 
-Install:
-- customtkinter
-- ADB binary (manual setup may be required)
+1. Install the package via pip in Pydroid3:
+
+```bash
+pip install adbtvremote
+```
+
+2. Create a new Python script (e.g., `run.py`) with the following content:
+
+```python
+from adbtvremote import app
+import tkinter
+app.main()
+```
+
+3. Run the script in Pydroid3.
+
+> **Note:** Make sure `customtkinter` is installed and the ADB binary is available on your Android device (manual setup may be required).
 
 ## ⚙️ Setup (ADB over Network)
 
