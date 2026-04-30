@@ -1,1 +1,2 @@
 customtkinter>=5.2.0
+adb_shell>=0.4.4
