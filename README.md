@@ -6,6 +6,7 @@ Works on desktop and mobile (Pydroid3).
 ![Python](https://img.shields.io/badge/Python-3.x-blue)
 ![Platform](https://img.shields.io/badge/Platform-PC%20%7C%20Android-green)
 ![ADB](https://img.shields.io/badge/ADB-Network-orange)
+![PyPI](https://img.shields.io/badge/PyPI-adbtvremote-blue)
 
 <img width="301" height="664" alt="screenshot" src="https://github.com/user-attachments/assets/85c94742-4329-4cac-bde3-0e112f880184" />
 
@@ -23,20 +24,34 @@ Works on desktop and mobile (Pydroid3).
 
 ## 📦 Requirements
 
-- Python 3.x
+- Python 3.8+
 - ADB installed and accessible in PATH
 
 ## ⚡ Quick Start
 
+### Option 1: Install with pipx (Recommended)
+
 ```bash
-pip install customtkinter
-python main.py
+pipx install adbtvremote
+adbtvremote
 ```
 
-### Python dependencies
+> **Why pipx?** Keeps the app isolated in its own virtual environment, avoiding dependency conflicts with other Python projects.
+
+### Option 2: Install with pip
 
 ```bash
-pip install customtkinter
+pip install adbtvremote
+adbtvremote
+```
+
+### Option 3: Run from source
+
+```bash
+git clone https://github.com/DanVerseDev/android-tv-remote.git
+cd android-tv-remote
+pip install -r requirements.txt
+python main.py
 ```
 
 ### Pydroid3 (Android)
@@ -66,7 +81,13 @@ adb connect 192.168.x.x:5555
 
 ## 🚀 Usage
 
-Run the script:
+After installation, simply run:
+
+```bash
+adbtvremote
+```
+
+Or if running from source:
 
 ```bash
 python main.py
@@ -74,7 +95,7 @@ python main.py
 
 ### Connect
 
-- Enter IP: 192.168.x.x:####
+- Enter IP: `192.168.x.x:####`
 - Click **Connect**
 
 ### Controls
@@ -93,10 +114,10 @@ python main.py
 
 ## 🧠 How it works
 
-- Uses adb shell input keyevent for buttons
-- Uses adb shell input text for text input
+- Uses `adb shell input keyevent` for buttons
+- Uses `adb shell input text` for text input
 - Runs ADB commands in background threads
-- Logs all activity for debugging to remote.log
+- Logs all activity for debugging to `remote.log`
 
 ## 📁 Project Structure
 
@@ -111,14 +132,14 @@ python main.py
 
 - Device and host must be on the same network
 - Some TVs may require pairing for wireless ADB
-- Text input replaces spaces with %s (ADB limitation)
+- Text input replaces spaces with `%s` (ADB limitation)
 
 ## 🐞 Logging
 
-All ADB calls and errors are logged in remote.log
+All ADB calls and errors are logged in `remote.log`
 
 ## 📄 License
 MIT License - Copyright (c) 2026 Daniel Martí
 
 ---
-Built with ❤️ by [Daniel Martí](https://gravatar.com/danversedev) aka DanVerse(https://github.com/DanVerseDev).
+Built with ❤️ by [Daniel Martí](https://gravatar.com/danversedev) aka [DanVerse](https://github.com/DanVerseDev)

@@ -1,9 +1,34 @@
 [project]
-name = "adb-remote-control"
+name = "adbtvremote"
 version = "0.1.0"
+authors = [
+  { name = "DanVerse" }
+]
 description = "Minimal Android TV remote over ADB (WiFi), works on PC and Pydroid"
-authors = [{name = "DanVerse"}]
-dependencies = ["customtkinter"]
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+  "customtkinter"
+]
+keywords = ["adb", "android-tv", "remote", "wifi", "pydroid"]
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Environment :: X11 Applications",
+    "Environment :: Win32 (MS Windows)",
+    "Topic :: Multimedia :: Video",
+]
+
+license = { text = "MIT" }
+
+[project.urls]
+Homepage = "https://github.com/DanVerseDev/adbtvremote"
+Issues = "https://github.com/DanVerseDev/adbtvremote/issues"
 
 [project.scripts]
-adb-tv-remote = "remote:main"
+adbtvremote = "adbtvremote.app:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
