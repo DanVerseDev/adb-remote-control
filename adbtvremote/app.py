@@ -1,13 +1,29 @@
 import subprocess
 import threading
 import sys
+import shutil
 import logging
 import customtkinter as ctk
 import tkinter as tk # For Pydroid3
 
+
+
 ADB_PATH = "adb"
 LOG_FILE = "remote.log"
 LOG_LEVEL = logging.DEBUG
+
+def has_adb():
+    return shutil.which(ADB_PATH) is not None
+
+USE_ADB_SHELL = not has_adb()
+
+AdbDeviceTcp = None
+if USE_ADB_SHELL:
+    try:
+        from adb_shell.adb_device import AdbDeviceTcp
+        from adb_shell.auth.sign_pythonrsa import PythonRSASigner
+    except ImportError:
+        USE_ADB_SHELL = False
 
 logging.basicConfig(
     level=LOG_LEVEL,
@@ -18,12 +34,18 @@ logging.basicConfig(
     ]
 )
 
+logging.debug(f"has_adb={has_adb()}")
+logging.debug(f"USE_ADB_SHELL={USE_ADB_SHELL}")
+
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
+
 
 class RemoteApp(ctk.CTk):
     def __init__(self):
         super().__init__()
+        self.adb_device = None
+        
         self.title("Android TV Remote")
         self.geometry("250x600")
         self.minsize(250, 600)
@@ -57,7 +79,7 @@ class RemoteApp(ctk.CTk):
         self.build_remote()
         self.bind_keys()
         self.after(0, self.center_window)
-
+        
     def center_window(self):
         w = 360
         h = 600
@@ -155,7 +177,13 @@ class RemoteApp(ctk.CTk):
             if text:
                 safe_text = text.replace(" ", "%s")
                 logging.debug(f"Sending text: {text}")
-                self.run_adb_async(["shell", "input", "text", safe_text])
+                if USE_ADB_SHELL and self.adb_device:
+                    threading.Thread(
+                        target=lambda: self.adb_device.shell(f'input text "{text}"'),
+                        daemon=True
+                    ).start()
+                else:
+                    self.run_adb_async(["shell", "input", "text", safe_text])
                 modal.destroy()
 
         ctk.CTkButton(modal, text="Send", command=send).pack(pady=10)
@@ -201,37 +229,82 @@ class RemoteApp(ctk.CTk):
         ip = self.ip_entry.get().strip()
         self.status_label.configure(text="Status: Connecting...")
 
-        def cb(result):
-            if not result:
-                self.status_label.configure(text="Status: Error")
-                return
+        if USE_ADB_SHELL:
+            def task():
+                try:
+                    parts = ip.split(":")
 
-            out = (result.stdout + result.stderr).lower()
+                    host = parts[0]
+                    port = int(parts[1]) if len(parts) > 1 else 5555
+                    port = int(port)
 
-            if "connected" in out or "already connected" in out:
-                self.connected_ip = ip
-                self.status_label.configure(text=f"Connected: {ip}")
-                self.connect_btn.configure(text="Disconnect")
-                self.ip_entry.pack_forget()
-            else:
-                self.status_label.configure(text="Status: Failed")
+                    device = AdbDeviceTcp(host, port, default_transport_timeout_s=9)
 
-        self.run_adb_async(["connect", ip], callback=cb)
+                    device.connect()
+
+                    self.adb_device = device
+
+                    self.after(0, lambda: self._on_connected(ip))
+                except Exception:
+                    logging.exception("ADB-SHELL connect error")
+                    self.after(0, lambda: self.status_label.configure(text="Status: Failed"))
+
+            threading.Thread(target=task, daemon=True).start()
+
+        else:
+            def cb(result):
+                if not result:
+                    self.status_label.configure(text="Status: Error")
+                    return
+
+                out = (result.stdout + result.stderr).lower()
+
+                if "connected" in out or "already connected" in out:
+                    self._on_connected(ip)
+                else:
+                    self.status_label.configure(text="Status: Failed")
+
+            self.run_adb_async(["connect", ip], callback=cb)
 
     def disconnect(self):
-        ip = self.connected_ip
-        self.status_label.configure(text="Status: Disconnecting...")
-
-        def cb(_):
+        if USE_ADB_SHELL:
+            self.adb_device = None
             self.connected_ip = None
             self.status_label.configure(text="Status: Disconnected")
             self.connect_btn.configure(text="Connect")
             self.ip_entry.pack(side="left", expand=True, fill="x", padx=(0,10))
+        else:
+            ip = self.connected_ip
+            self.status_label.configure(text="Status: Disconnecting...")
 
-        self.run_adb_async(["disconnect", ip], callback=cb)
+            def cb(_):
+                self.connected_ip = None
+                self.status_label.configure(text="Status: Disconnected")
+                self.connect_btn.configure(text="Connect")
+                self.ip_entry.pack(side="left", expand=True, fill="x", padx=(0,10))
 
+            self.run_adb_async(["disconnect", ip], callback=cb)
+        
+    def _on_connected(self, ip):
+        self.connected_ip = ip
+        self.status_label.configure(text=f"Connected: {ip}")
+        self.connect_btn.configure(text="Disconnect")
+        self.ip_entry.pack_forget()
+    
     def send_key(self, keycode):
-        if self.connected_ip:
+        if not self.connected_ip:
+            return
+
+        if USE_ADB_SHELL and self.adb_device:
+            def task():
+                try:
+                    self.adb_device.shell(f"input keyevent {keycode}")
+                except Exception:
+                    logging.exception("ADB-SHELL key error")
+
+            threading.Thread(target=task, daemon=True).start()
+
+        else:
             self.run_adb_async(["shell", "input", "keyevent", keycode])
 
     # ---------- Keyboard ----------
