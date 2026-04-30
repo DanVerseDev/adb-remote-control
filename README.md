@@ -6,7 +6,7 @@ Works on desktop and mobile (Pydroid3).
 ![Python](https://img.shields.io/badge/Python-3.x-blue)
 ![Platform](https://img.shields.io/badge/Platform-PC%20%7C%20Android-green)
 ![ADB](https://img.shields.io/badge/ADB-Network-orange)
-![PyPI](https://img.shields.io/badge/PyPI-adbtvremote-blue)
+![PyPI](https://img.shields.io/pypi/v/adbtvremote)
 
 <img width="301" height="664" alt="screenshot" src="https://github.com/user-attachments/assets/85c94742-4329-4cac-bde3-0e112f880184" />
 
@@ -25,7 +25,7 @@ Works on desktop and mobile (Pydroid3).
 ## 📦 Requirements
 
 - Python 3.8+
-- ADB installed and accessible in PATH
+- ADB installed and accessible in PATH (PC only)
 
 ## ⚡ Quick Start
 
@@ -56,6 +56,8 @@ python main.py
 
 ### Pydroid3 (Android)
 
+> **Note:** On Pydroid3, this app uses a pure Python ADB implementation (`adb-shell`), so no ADB binary is required.
+
 1. Install the package via pip in Pydroid3:
 
 ```bash
@@ -65,9 +67,9 @@ pip install adbtvremote
 2. Create a new Python script (e.g., `run.py`) with the following content:
 
 ```python
-from adbtvremote import app
+from adbtvremote.app import main
 import tkinter
-app.main()
+main()
 ```
 
 3. Run the script in Pydroid3.
@@ -141,6 +143,15 @@ python main.py
 ├── remote.log (generated)
 └── README.md
 ```
+
+## 🔁 Smart Backend
+
+The app automatically selects the best ADB method:
+
+- 💻 **PC** → Uses system `adb` binary (fast, full compatibility)
+- 📱 **Pydroid3** → Uses pure Python `adb-shell` (no ADB required)
+
+No configuration needed.
 
 ## ⚠️ Notes
 
